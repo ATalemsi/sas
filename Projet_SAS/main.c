@@ -13,37 +13,52 @@ typedef struct tache{
     char *titre;
     char *desc;
     date  deadline;
-    char *statut;
+    int statut;
 }tache;
 
 int tai=0;
 
 void ajouter_nouveaux_tache(tache *taches){
-
-    printf("-----entrer les informations de la taches----- \n");
+    int ch;
     if(tai==0){
         taches[tai].id=1;
     }else{
        taches[tai].id=tai+1;
     }
-    printf("%d \n",taches[tai].id);
+    printf("-----entrer les informations de la taches %d -----  \n",taches[tai].id);
     taches[tai].titre=(char*)malloc(sizeof(char*));
     printf("entrer le titre de la tache : ");
     scanf(" %[^\n]",taches[tai].titre);
-    printf("%s \n",taches[tai].titre);
     taches[tai].desc = (char*)malloc(sizeof(char*));
     printf("entrer la description de la tache :");
     scanf(" %[^\n]", taches[tai].desc);
     printf("--- le deadline de la tache------\n ");
     printf(" entrer le jour de   deadline de la tache : ");
     scanf("%d",&taches[tai].deadline.jour);
+    while(taches[tai].deadline.jour>32 || taches[tai].deadline.jour<0){
+         printf("veuiller entre une valeur entre 0 et 31 :");
+         scanf("%d",&taches[tai].deadline.jour);
+    }
     printf(" entrer le mois de deadline de la tache : ");
     scanf("%d",&taches[tai].deadline.mois);
+    while(taches[tai].deadline.mois>13 || taches[tai].deadline.mois<0){
+         printf("veuiller entre une valeur entre 0 et 12 :");
+         scanf("%d",&taches[tai].deadline.mois);
+    }
     printf(" entrer le annee de deadline de la tache : ");
     scanf("%d",&taches[tai].deadline.annee);
-    taches[tai].statut=(char*)malloc(sizeof(char*));
-    printf("entrer le statut  de la tache : ecrit TO DO ||  DOING  || DONE : ");
-    scanf(" %[^\n]", taches[tai].statut);
+    while( taches[tai].deadline.annee<2022 || taches[tai].deadline.annee<0){
+         printf("veuiller entre une valeur entre superieur a 2023 :");
+         scanf("%d",&taches[tai].deadline.annee);
+    }
+    do {
+    printf("--entre le nombre de  status :--- \n ");
+    printf("1-TO DO \n");
+    printf("2-DOING \n");
+    printf("3-DONE \n");
+    scanf("%d",&ch);
+    }while(ch<0 && ch>3);
+     taches[tai].statut=ch;
     tai++;
 }
  void ajouter_plusieur( tache taches[], int nbr){
@@ -116,7 +131,7 @@ int jours;
     {
         if(tab[i]==0){
            printf("id : %d | Titre : %s | Deadline en : Aujourdui\n",taches[i].id,taches[i].titre);
-        }else if (tab[i]<=3)
+        }else if ( tab[i]>0&&tab[i]<=3)
         {
            printf("id : %d | Titre : %s | Deadline en : %d jours\n",taches[i].id,taches[i].titre,tab[i]);
         }
@@ -139,12 +154,13 @@ void modifier_desc(tache taches[], int identi){
 }
 void modifier_status(tache taches[], int identi){
     int i;
+    int c;
     int t=0;
     for(i=0;i<tai;i++){
         if(taches[i].id==identi){
                 printf("modifier votre status : ");
-               scanf(" %[^\n]",taches[i].statut);
-               t=1;
+                scanf(" %d",&taches[i].statut);
+                t=1;
         }
     }
     if(t==0){
@@ -225,9 +241,9 @@ void nombre_total_tache(tache taches[]){
         }
      }
       if(N_tache==0){
-        printf("On a aucun tache a cree");
+        printf("On a aucun tache a cree \n");
       }else{
-          printf(" le nombre des tache cree est : %d",N_tache);
+          printf(" le nombre des tache cree est : %d \n",N_tache);
       }
 }
 
@@ -235,22 +251,16 @@ void status_tache(tache taches[]){
      int i;
      int complet=0;
      int incomplet=0;
-     char sta1[]="DONE";
-     char sta2[]="DOING";
-     char sta3[]="TO DO";
      for(i=0;i<tai;i++){
-          if(strcmp(taches[i].statut,sta1)==0){
+          if(taches[i].statut==3){
             complet++;
+          }else{
+              incomplet++;
           }
-          if(strcmp(taches[i].statut,sta2)==0){
-            incomplet++;
-          }
-             if(strcmp(taches[i].statut,sta3)==0){
-            incomplet++;
-          }
+
      }
-     printf(" les nombres des tache incomplet :  %d",incomplet);
-        printf(" les nombres des tache complet :  %d",complet);
+     printf(" les nombres des tache incomplet :  %d \n",incomplet);
+        printf(" les nombres des tache complet :  %d \n",complet);
 
 }
 
@@ -303,11 +313,19 @@ void afficher_tache(tache *taches){
        return;
     }else {
         for( i=0;i<tai;i++){
-        printf("----votre taches-----\n");
-        printf("------tache %d---- \n",taches[i].id);
-        printf("titre : %s \n",taches[i].titre);
-        printf("description : %s \n",taches[i].desc);
-        printf("statut : %s \n",taches[i].statut);
+        printf("-------votre taches--------\n");
+        printf("|  ID         | %d  \n",taches[i].id);
+        printf("| titre       | : %s \n",taches[i].titre);
+        printf("| description | : %s \n",taches[i].desc);
+        if(taches[i].statut==1){
+        printf("|  statut     | : TO DO \n");
+
+        }else if(taches[i].statut==2){
+        printf("|  statut     | : DOING \n");
+        }else {
+        printf("|  statut     |: DONE \n");
+        }
+
         printf("la date jj/mm/aaaa : %d/%d/%d \n",taches[i].deadline.jour,taches[i].deadline.mois,taches[i].deadline.annee);
         printf("----------------------------------------------------------\n");
 
@@ -320,54 +338,139 @@ int main()
 {
     tache taches[150];
     int nbr;
-    char choice;
+    int delete_id;
+    int up_id;
+    int se_id;
+
+    int choice;
     int choix,choix1,choix2,choix3,choix4;
     do{
-       printf("\t -----saisir votre choix----- : ");
+       printf("\t -----saisir votre choix----- : \n");
 
-       printf("\t1-Ajouter nouveaux tache :\n");
+       printf("\t1-Ajouter nouveaux tache : \n");
        printf("\t2-Ajouter plusieur tache : \n");
        printf("\t3-Affichage : \n");
        printf("\t4-Supprimer une tache : \n");
        printf("\t5-Modification : \n");
-       printf("\t6-Rechercher : \n");
+       printf("\t6-Rechercher :\n ");
        printf("\t7-Statistique : \n");
+       printf("\t8-Quitter : \n ");
        scanf("%d",&choix);
-       if(choix>0 && choix<8){
+       choix=(int)choix;
+
           switch(choix){
              case 1: ajouter_nouveaux_tache(taches);
+                   break;
+             case 2: printf(" nombre des taches que tu veux ajouter : ");
+                     scanf("%d",&nbr);
+                     ajouter_plusieur(taches,nbr);
              break;
-             case 2: printf
+             case 3:
+                  printf("\t ----- saisir votre choix pour affichage ----- :  \n");
+                  printf("\t1-affichage simple :\n");
+                  printf("\t2-affichage par tri alphabetique : \n");
+                  printf("\t3-Affichage par tri deadline : \n");
+                  printf("\t4-Afficher les taches dans le deadline est dans 3 jours au moins : ");
+                  scanf("%d",&choix1);
+                   if (scanf("%d", &choix) != 1) {
 
+                     scanf("%*s");
 
-            getchar();
-            printf(" do you want to  continue (y/n)\n") ;
-            scanf("%c",&choice);
+                    printf("Invalid input. Please enter a number.\n");
+                       continue;
+                     }
+                      switch(choix1){
+
+                         case 1:
+                             printf("Affichage simple: \n");
+                             afficher_tache(taches);
+                         break;
+                         case 2 :tri_alphabetique(taches);
+                                 afficher_tache(taches);
+                         break;
+                         case 3: tri_date(taches);
+                                afficher_tache(taches);
+                         break;
+                         case 4:dead_line(taches);
+                         break;
+                         default :
+                                printf(" merci ");
+                      }
+                  break;
+             case 4 : printf(" donner id de tache que tu veux supprimer : ");
+                      scanf("%d",&delete_id);
+                      supp_tache(taches,delete_id);
+             break;
+             case 5 :printf("\t ----- saisir votre choix pour modifier ----- : \n ");
+                     printf("\t1-modification de la description :\n");
+                     printf("\t2-modification de status: \n");
+                     printf("\t3-modification de la deadline : \n");
+                     scanf("%d",&choix2);
+                       switch(choix2){
+                            case 1: printf("donner ID de tache pour  modidfier leur description : ");
+                                  scanf("%d",&up_id);
+                                  modifier_desc(taches,up_id);
+                            break;
+                            case 2:printf("donner ID de tache pour  modidfier leur status : ");
+                                   scanf("%d",&up_id);
+                                   modifier_status(taches,up_id);
+                            break;
+                            case 3: printf("donner ID de tache pour  modidfier leur deadline : ");
+                                    scanf("%d",&up_id);
+                                    modifier_deadline(taches,up_id);
+                            break;
+                            default :
+                                 printf("aucun choix valid \n");
+                                 printf("merci \n");
+                                 break;
+                       }
+                       break;
+                  case 6 : printf("--- sisair votre choix pour recherche----- \n ");
+                           printf("\t1-recherche tache par ID:\n");
+                           printf("\t2-recherche un tache pour titre: \n");
+                           scanf("%d",&choix3);
+                              switch(choix3){
+                                  case 1:printf("donner le ID pour le recherche :");
+                                  scanf("%d",&se_id);
+                                  recherche_par_id(taches,se_id);
+                                  break;
+                                  case 2:recherche_par_titre(taches);
+                                   break;
+                                  default :
+                                      printf("aucun choix valid \n");
+                                      printf("merci \n");
+                                    break;
+                              }
+                              break;
+                    case 7 :printf("---- les statistique------ \n ");
+                            printf("\t1-Afficher les nombre des taches : \n");
+                            printf("\t2-Afficher les nombres des tache complet et incomplet : \n");
+                            printf("\t3-Afficherles nombre des jours rester pour chaque tache : \n ");
+                            scanf("%d",&choix4);
+                            switch(choix4){
+                               case 1: nombre_total_tache(taches);
+                                 break;
+                               case 2 :status_tache(taches);
+                                  break;
+                               case 3: jours_restant(taches);
+                                break;
+                               default :
+                                   printf("aucun choix valid \n");
+                                   printf("merci \n");
+                                   break;
+                            }
+                            break;
+                     case 8 : printf("");
+                       break;
+                     default :printf("choix invalid \n");
+                              printf(" Merci");
+                              break;
              }
-          }
+       }while(choix!=8  );
 
 
-       }while(choice=='Y');
+     printf(" Merci de test notre programe");
 
 
-
-
-
-    }
-
-
-   //ajouter_nouveaux_tache(taches);
-    ajouter_plusieur(taches,nbr);
-    supp_tache(taches,2);
-    //afficher_tache(taches);
-    //tri_alphabetique(taches);
-    //tri_date(taches);
-    //dead_line(taches);
-    //jours_restant(taches);
-    //recherche_par_id(taches,2);
-    //recherche_par_titre(taches);
-    //afficher_tache(taches);
-   // modifier_desc(taches,1);
-    afficher_tache(taches);
-    return 0;
-}
+     return 0;
+           }
