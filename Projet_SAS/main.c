@@ -18,7 +18,7 @@ typedef struct tache{
 
 int tai=0;
 
-void ajouter_nouveaux_tache(tache *taches){
+void ajouter_nouveaux_tache(tache taches[]){
     int ch;
     if(tai==0){
         taches[tai].id=1;
@@ -113,6 +113,7 @@ void tri_date(tache taches[]){
 
 void dead_line(tache taches[]){
 int i;
+int t=0;
 int delai_jour;
 int jours;
     int tab[tai];
@@ -131,10 +132,17 @@ int jours;
     {
         if(tab[i]==0){
            printf("id : %d | Titre : %s | Deadline en : Aujourdui\n",taches[i].id,taches[i].titre);
+           t=1;
         }else if ( tab[i]>0&&tab[i]<=3)
         {
+           t=1;
            printf("id : %d | Titre : %s | Deadline en : %d jours\n",taches[i].id,taches[i].titre,tab[i]);
         }
+        if(t==0){
+
+            printf(" aucun jour a mois de 3 jour restent pour le deadline");
+        }
+
     }
 }
 void modifier_desc(tache taches[], int identi){
@@ -158,9 +166,16 @@ void modifier_status(tache taches[], int identi){
     int t=0;
     for(i=0;i<tai;i++){
         if(taches[i].id==identi){
-                printf("modifier votre status : ");
-                scanf(" %d",&taches[i].statut);
-                t=1;
+        printf("modifier votre status : \n");
+                  do {
+                        printf("--entre le nombre de  status :--- \n ");
+                        printf("1-TO DO \n");
+                        printf("2-DOING \n");
+                        printf("3-DONE \n");
+                        scanf("%d",&c);
+                     }while(c<0 && c>3);
+                      taches[i].statut=c;
+                       t=1;
         }
     }
     if(t==0){
@@ -174,12 +189,24 @@ void modifier_deadline(tache taches[], int identi){
     for(i=0;i<tai;i++){
         if(taches[i].id==identi){
                printf("modifier date de deadline : \n");
-               printf("entre le nouveaux jour : ");
-               scanf(" %d",taches[i].deadline.jour);
-               printf("entre le nouveaux mois : ");
-               scanf(" %d",taches[i].deadline.mois);
-               printf("entre le nouveaux annee : ");
-               scanf(" %d",taches[i].deadline.annee);
+               printf(" entrer le nouveaux jour  : ");
+               scanf("%d",&taches[i].deadline.jour);
+               while(taches[i].deadline.jour>32 || taches[i].deadline.jour<0){
+               printf("veuiller entre une valeur entre 0 et 31 :");
+                scanf("%d",&taches[i].deadline.jour);
+                  }
+               printf(" entrer le noveaux mois  : ");
+               scanf("%d",&taches[i].deadline.mois);
+               while(taches[i].deadline.mois>13 || taches[i].deadline.mois<0){
+               printf("veuiller entre une valeur entre 0 et 12 :");
+               scanf("%d",&taches[i].deadline.mois);
+            }
+                printf(" entrer le nouveaux annee  : ");
+                scanf("%d",&taches[i].deadline.annee);
+                while( taches[i].deadline.annee<2022 || taches[i].deadline.annee<0){
+                printf("veuiller entre une valeur entre superieur a 2023 :");
+                scanf("%d",&taches[i].deadline.annee);
+            }
                t=1;
         }
     }
@@ -191,20 +218,31 @@ void modifier_deadline(tache taches[], int identi){
 
 void recherche_par_id(tache taches[],int identi){
      int i;
-      tache ta;
       int t=0;
      for(i=0;i<tai;i++){
         if(taches[i].id==identi){
-        ta=taches[i];
-        printf("------tache %d---- \n",ta.id);
-        printf("titre : %s \n",ta.titre);
-        printf("description : %s \n",ta.desc);
-        printf("statut : %s \n",ta.statut);
-        printf("la date jj/mm/aaaa : %d/%d/%d \n",ta.deadline.jour,ta.deadline.mois,ta.deadline.annee);
+        taches[i];
+        printf("------tache %d---- \n",taches[i].id);
+        printf("titre : %s \n",taches[i].titre);
+        printf("--------------------------------\n");
+        printf("description : %s \n",taches[i].desc);
+         printf("--------------------------------\n");
+        if(taches[i].statut==1){
+        printf("|  statut     | : TO DO \n");
+
+        }else if(taches[i].statut==2){
+        printf("|  statut     | : DOING \n");
+        }else {
+        printf("|  statut     |: DONE \n");
         }
+         printf("--------------------------------\n");
+        printf("| la date jj/mm/aaaa  | : %d/%d/%d \n",taches[i].deadline.jour,taches[i].deadline.mois,taches[i].deadline.annee);
+        }
+         printf("--------------------------------\n");
      }
     if(t==0){
       printf("Aucune tache avec identifiant %d na ete trouvee.\n",identi);
+       printf("--------------------------------\n");
     }
 }
 void recherche_par_titre(tache taches[]){
@@ -326,7 +364,7 @@ void afficher_tache(tache *taches){
         printf("|  statut     |: DONE \n");
         }
 
-        printf("la date jj/mm/aaaa : %d/%d/%d \n",taches[i].deadline.jour,taches[i].deadline.mois,taches[i].deadline.annee);
+        printf("| la date jj/mm/aaaa : %d/%d/%d |\n",taches[i].deadline.jour,taches[i].deadline.mois,taches[i].deadline.annee);
         printf("----------------------------------------------------------\n");
 
         }
@@ -341,12 +379,11 @@ int main()
     int delete_id;
     int up_id;
     int se_id;
-
+    int scan;
     int choice;
     int choix,choix1,choix2,choix3,choix4;
     do{
        printf("\t -----saisir votre choix----- : \n");
-
        printf("\t1-Ajouter nouveaux tache : \n");
        printf("\t2-Ajouter plusieur tache : \n");
        printf("\t3-Affichage : \n");
@@ -356,8 +393,6 @@ int main()
        printf("\t7-Statistique : \n");
        printf("\t8-Quitter : \n ");
        scanf("%d",&choix);
-       choix=(int)choix;
-
           switch(choix){
              case 1: ajouter_nouveaux_tache(taches);
                    break;
@@ -370,15 +405,8 @@ int main()
                   printf("\t1-affichage simple :\n");
                   printf("\t2-affichage par tri alphabetique : \n");
                   printf("\t3-Affichage par tri deadline : \n");
-                  printf("\t4-Afficher les taches dans le deadline est dans 3 jours au moins : ");
+                  printf("\t4-Afficher les taches dans le deadline est dans 3 jours au moins : \n ");
                   scanf("%d",&choix1);
-                   if (scanf("%d", &choix) != 1) {
-
-                     scanf("%*s");
-
-                    printf("Invalid input. Please enter a number.\n");
-                       continue;
-                     }
                       switch(choix1){
 
                          case 1:
@@ -466,6 +494,8 @@ int main()
                               printf(" Merci");
                               break;
              }
+
+
        }while(choix!=8  );
 
 
